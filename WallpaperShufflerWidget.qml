@@ -32,7 +32,7 @@ PluginComponent {
     property string getWallpaperScriptPath: Qt.resolvedUrl("get-current-wallpaper").toString().replace("file://", "")
 
     popoutWidth: 420
-    popoutHeight: 0  // Auto-calculate based on content
+    popoutHeight: 680  // Fixed height to show all content
 
     popoutContent: Component {
         Column {
@@ -177,7 +177,7 @@ PluginComponent {
                                 id: currentImage
                                 anchors.fill: parent
                                 source: root.currentWallpaper ? "file://" + root.currentWallpaper : ""
-                                fillMode: Image.PreserveAspectCrop
+                                fillMode: Image.PreserveAspectFit
                                 asynchronous: true
                                 cache: true
                                 visible: root.currentWallpaper !== ""
@@ -262,7 +262,7 @@ PluginComponent {
                         // Next wallpaper preview
                         Rectangle {
                             width: parent.width
-                            height: 140
+                            height: 180
                             radius: Theme.cornerRadius
                             color: Theme.surfaceLight
                             border.color: Theme.outlineLight
@@ -273,7 +273,7 @@ PluginComponent {
                                 id: nextImage
                                 anchors.fill: parent
                                 source: root.nextWallpaper ? "file://" + root.nextWallpaper : ""
-                                fillMode: Image.PreserveAspectCrop
+                                fillMode: Image.PreserveAspectFit
                                 asynchronous: true
                                 cache: true
                                 visible: root.nextWallpaper !== ""
