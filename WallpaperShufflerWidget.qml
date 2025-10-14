@@ -32,7 +32,7 @@ PluginComponent {
     property string getWallpaperScriptPath: Qt.resolvedUrl("get-current-wallpaper").toString().replace("file://", "")
 
     popoutWidth: 420
-    popoutHeight: 680  // Fixed height to show all content
+    popoutHeight: 690
 
     popoutContent: Component {
         Column {
@@ -82,242 +82,242 @@ PluginComponent {
             }
 
             // Folder path section
-                Rectangle {
-                    width: parent.width
-                    height: pathColumn.height + Theme.spacingM * 2
-                    radius: Theme.cornerRadius
-                    color: Qt.rgba(Theme.surfaceContainerHigh.r, Theme.surfaceContainerHigh.g, Theme.surfaceContainerHigh.b, Theme.getContentBackgroundAlpha() * 0.6)
-                    border.width: 0
+            Rectangle {
+                width: parent.width
+                height: pathColumn.height + Theme.spacingM * 2
+                radius: Theme.cornerRadius
+                color: Qt.rgba(Theme.surfaceContainerHigh.r, Theme.surfaceContainerHigh.g, Theme.surfaceContainerHigh.b, Theme.getContentBackgroundAlpha() * 0.6)
+                border.width: 0
 
-                    Column {
-                        id: pathColumn
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.top: parent.top
-                        anchors.margins: Theme.spacingM
+                Column {
+                    id: pathColumn
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.margins: Theme.spacingM
+                    spacing: Theme.spacingXS
+
+                    Row {
                         spacing: Theme.spacingXS
+                        width: parent.width
 
-                        Row {
-                            spacing: Theme.spacingXS
-                            width: parent.width
-
-                            DankIcon {
-                                name: "folder"
-                                size: Theme.iconSize - 4
-                                color: Theme.primary
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-
-                            StyledText {
-                                text: I18n.tr("Shuffle Folder")
-                                font.pixelSize: Theme.fontSizeSmall
-                                color: Theme.surfaceVariantText
-                                font.weight: Font.Medium
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
+                        DankIcon {
+                            name: "folder"
+                            size: Theme.iconSize - 4
+                            color: Theme.primary
+                            anchors.verticalCenter: parent.verticalCenter
                         }
 
                         StyledText {
-                            text: root.wallpaperPath || "~/Pictures"
-                            font.pixelSize: Theme.fontSizeMedium
-                            color: Theme.surfaceText
-                            width: parent.width
-                            elide: Text.ElideMiddle
+                            text: I18n.tr("Shuffle Folder")
+                            font.pixelSize: Theme.fontSizeSmall
+                            color: Theme.surfaceVariantText
+                            font.weight: Font.Medium
+                            anchors.verticalCenter: parent.verticalCenter
                         }
                     }
+
+                    StyledText {
+                        text: root.wallpaperPath || "~/Pictures"
+                        font.pixelSize: Theme.fontSizeMedium
+                        color: Theme.surfaceText
+                        width: parent.width
+                        elide: Text.ElideMiddle
+                    }
                 }
+            }
 
-                // Current wallpaper section
-                Rectangle {
-                    width: parent.width
-                    height: currentColumn.height + Theme.spacingM * 2
-                    radius: Theme.cornerRadius
-                    color: Qt.rgba(Theme.surfaceContainerHigh.r, Theme.surfaceContainerHigh.g, Theme.surfaceContainerHigh.b, Theme.getContentBackgroundAlpha() * 0.6)
-                    border.width: 0
+            // Current wallpaper section
+            Rectangle {
+                width: parent.width
+                height: currentColumn.height + Theme.spacingM * 2
+                radius: Theme.cornerRadius
+                color: Qt.rgba(Theme.surfaceContainerHigh.r, Theme.surfaceContainerHigh.g, Theme.surfaceContainerHigh.b, Theme.getContentBackgroundAlpha() * 0.6)
+                border.width: 0
 
-                    Column {
-                        id: currentColumn
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.top: parent.top
-                        anchors.margins: Theme.spacingM
-                        spacing: Theme.spacingS
+                Column {
+                    id: currentColumn
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.margins: Theme.spacingM
+                    spacing: Theme.spacingS
 
-                        Row {
-                            spacing: Theme.spacingXS
-                            width: parent.width
+                    Row {
+                        spacing: Theme.spacingXS
+                        width: parent.width
 
-                            DankIcon {
-                                name: "image"
-                                size: Theme.iconSize - 4
-                                color: Theme.primary
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-
-                            StyledText {
-                                text: I18n.tr("Current Wallpaper")
-                                font.pixelSize: Theme.fontSizeSmall
-                                color: Theme.surfaceVariantText
-                                font.weight: Font.Medium
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
+                        DankIcon {
+                            name: "image"
+                            size: Theme.iconSize - 4
+                            color: Theme.primary
+                            anchors.verticalCenter: parent.verticalCenter
                         }
 
-                        // Current wallpaper preview
-                        Rectangle {
-                            width: parent.width
-                            height: 180
-                            radius: Theme.cornerRadius
-                            color: Theme.surfaceLight
-                            border.color: Theme.outlineLight
-                            border.width: 1
-                            clip: true
+                        StyledText {
+                            text: I18n.tr("Current Wallpaper")
+                            font.pixelSize: Theme.fontSizeSmall
+                            color: Theme.surfaceVariantText
+                            font.weight: Font.Medium
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
 
-                            CachingImage {
-                                id: currentImage
+                    // Current wallpaper preview
+                    Rectangle {
+                        width: parent.width
+                        height: 180
+                        radius: Theme.cornerRadius
+                        color: Theme.surfaceLight
+                        border.color: Theme.outlineLight
+                        border.width: 1
+                        clip: true
+
+                        CachingImage {
+                            id: currentImage
+                            anchors.fill: parent
+                            source: root.currentWallpaper ? "file://" + root.currentWallpaper : ""
+                            fillMode: Image.PreserveAspectFit
+                            asynchronous: true
+                            cache: true
+                            visible: root.currentWallpaper !== ""
+
+                            Rectangle {
                                 anchors.fill: parent
-                                source: root.currentWallpaper ? "file://" + root.currentWallpaper : ""
-                                fillMode: Image.PreserveAspectFit
-                                asynchronous: true
-                                cache: true
-                                visible: root.currentWallpaper !== ""
-
-                                Rectangle {
-                                    anchors.fill: parent
-                                    color: "transparent"
-                                    border.color: Theme.outlineLight
-                                    border.width: 1
-                                    radius: Theme.cornerRadius
-                                }
-                            }
-
-                            Column {
-                                anchors.centerIn: parent
-                                spacing: Theme.spacingS
-                                visible: !root.currentWallpaper
-
-                                DankIcon {
-                                    name: "broken_image"
-                                    size: 48
-                                    color: Theme.surfaceVariantText
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                }
-
-                                StyledText {
-                                    text: I18n.tr("No wallpaper set")
-                                    font.pixelSize: Theme.fontSizeMedium
-                                    color: Theme.surfaceVariantText
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                }
+                                color: "transparent"
+                                border.color: Theme.outlineLight
+                                border.width: 1
+                                radius: Theme.cornerRadius
                             }
                         }
 
-                        StyledText {
-                            text: root.currentWallpaper ? root.currentWallpaper.split('/').pop() : I18n.tr("None")
-                            font.pixelSize: Theme.fontSizeMedium
-                            color: Theme.surfaceText
-                            width: parent.width
-                            elide: Text.ElideMiddle
-                            horizontalAlignment: Text.AlignHCenter
-                        }
-                    }
-                }
-
-                // Next wallpaper section
-                Rectangle {
-                    width: parent.width
-                    height: nextColumn.height + Theme.spacingM * 2
-                    radius: Theme.cornerRadius
-                    color: Qt.rgba(Theme.surfaceContainerHigh.r, Theme.surfaceContainerHigh.g, Theme.surfaceContainerHigh.b, Theme.getContentBackgroundAlpha() * 0.6)
-                    border.width: 0
-
-                    Column {
-                        id: nextColumn
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.top: parent.top
-                        anchors.margins: Theme.spacingM
-                        spacing: Theme.spacingS
-
-                        Row {
-                            spacing: Theme.spacingXS
-                            width: parent.width
+                        Column {
+                            anchors.centerIn: parent
+                            spacing: Theme.spacingS
+                            visible: !root.currentWallpaper
 
                             DankIcon {
-                                name: "skip_next"
-                                size: Theme.iconSize - 4
-                                color: Theme.secondary
-                                anchors.verticalCenter: parent.verticalCenter
+                                name: "broken_image"
+                                size: 48
+                                color: Theme.surfaceVariantText
+                                anchors.horizontalCenter: parent.horizontalCenter
                             }
 
                             StyledText {
-                                text: I18n.tr("Next Wallpaper")
-                                font.pixelSize: Theme.fontSizeSmall
+                                text: I18n.tr("No wallpaper set")
+                                font.pixelSize: Theme.fontSizeMedium
                                 color: Theme.surfaceVariantText
-                                font.weight: Font.Medium
-                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.horizontalCenter: parent.horizontalCenter
                             }
                         }
+                    }
 
-                        // Next wallpaper preview
-                        Rectangle {
-                            width: parent.width
-                            height: 180
-                            radius: Theme.cornerRadius
-                            color: Theme.surfaceLight
-                            border.color: Theme.outlineLight
-                            border.width: 1
-                            clip: true
+                    StyledText {
+                        text: root.currentWallpaper ? root.currentWallpaper.split('/').pop() : I18n.tr("None")
+                        font.pixelSize: Theme.fontSizeMedium
+                        color: Theme.surfaceText
+                        width: parent.width
+                        elide: Text.ElideMiddle
+                        horizontalAlignment: Text.AlignHCenter
+                    }
+                }
+            }
 
-                            CachingImage {
-                                id: nextImage
-                                anchors.fill: parent
-                                source: root.nextWallpaper ? "file://" + root.nextWallpaper : ""
-                                fillMode: Image.PreserveAspectFit
-                                asynchronous: true
-                                cache: true
-                                visible: root.nextWallpaper !== ""
+            // Next wallpaper section
+            Rectangle {
+                width: parent.width
+                height: nextColumn.height + Theme.spacingM * 2
+                radius: Theme.cornerRadius
+                color: Qt.rgba(Theme.surfaceContainerHigh.r, Theme.surfaceContainerHigh.g, Theme.surfaceContainerHigh.b, Theme.getContentBackgroundAlpha() * 0.6)
+                border.width: 0
 
-                                Rectangle {
-                                    anchors.fill: parent
-                                    color: "transparent"
-                                    border.color: Theme.outlineLight
-                                    border.width: 1
-                                    radius: Theme.cornerRadius
-                                }
-                            }
+                Column {
+                    id: nextColumn
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.margins: Theme.spacingM
+                    spacing: Theme.spacingS
 
-                            Column {
-                                anchors.centerIn: parent
-                                spacing: Theme.spacingS
-                                visible: !root.nextWallpaper
+                    Row {
+                        spacing: Theme.spacingXS
+                        width: parent.width
 
-                                DankIcon {
-                                    name: "image_not_supported"
-                                    size: 40
-                                    color: Theme.surfaceVariantText
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                }
-
-                                StyledText {
-                                    text: I18n.tr("No next wallpaper")
-                                    font.pixelSize: Theme.fontSizeMedium
-                                    color: Theme.surfaceVariantText
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                }
-                            }
+                        DankIcon {
+                            name: "skip_next"
+                            size: Theme.iconSize - 4
+                            color: Theme.secondary
+                            anchors.verticalCenter: parent.verticalCenter
                         }
 
                         StyledText {
-                            text: root.nextWallpaper ? root.nextWallpaper.split('/').pop() : I18n.tr("None")
-                            font.pixelSize: Theme.fontSizeMedium
-                            color: Theme.surfaceText
-                            width: parent.width
-                            elide: Text.ElideMiddle
-                            horizontalAlignment: Text.AlignHCenter
+                            text: I18n.tr("Next Wallpaper")
+                            font.pixelSize: Theme.fontSizeSmall
+                            color: Theme.surfaceVariantText
+                            font.weight: Font.Medium
+                            anchors.verticalCenter: parent.verticalCenter
                         }
                     }
+
+                    // Next wallpaper preview
+                    Rectangle {
+                        width: parent.width
+                        height: 180
+                        radius: Theme.cornerRadius
+                        color: Theme.surfaceLight
+                        border.color: Theme.outlineLight
+                        border.width: 1
+                        clip: true
+
+                        CachingImage {
+                            id: nextImage
+                            anchors.fill: parent
+                            source: root.nextWallpaper ? "file://" + root.nextWallpaper : ""
+                            fillMode: Image.PreserveAspectFit
+                            asynchronous: true
+                            cache: true
+                            visible: root.nextWallpaper !== ""
+
+                            Rectangle {
+                                anchors.fill: parent
+                                color: "transparent"
+                                border.color: Theme.outlineLight
+                                border.width: 1
+                                radius: Theme.cornerRadius
+                            }
+                        }
+
+                        Column {
+                            anchors.centerIn: parent
+                            spacing: Theme.spacingS
+                            visible: !root.nextWallpaper
+
+                            DankIcon {
+                                name: "image_not_supported"
+                                size: 40
+                                color: Theme.surfaceVariantText
+                                anchors.horizontalCenter: parent.horizontalCenter
+                            }
+
+                            StyledText {
+                                text: I18n.tr("No next wallpaper")
+                                font.pixelSize: Theme.fontSizeMedium
+                                color: Theme.surfaceVariantText
+                                anchors.horizontalCenter: parent.horizontalCenter
+                            }
+                        }
+                    }
+
+                    StyledText {
+                        text: root.nextWallpaper ? root.nextWallpaper.split('/').pop() : I18n.tr("None")
+                        font.pixelSize: Theme.fontSizeMedium
+                        color: Theme.surfaceText
+                        width: parent.width
+                        elide: Text.ElideMiddle
+                        horizontalAlignment: Text.AlignHCenter
+                    }
                 }
+            }
         }
     }
 
@@ -376,7 +376,7 @@ PluginComponent {
                 wallpaperInfoProcess.running = true;
             }
         }
-        
+
         onExited: (exitCode, exitStatus) => {
             console.log("Shuffle process exited with code:", exitCode);
         }
@@ -388,7 +388,7 @@ PluginComponent {
         running: true
         repeat: true
         triggeredOnStart: true
-        
+
         onTriggered: {
             console.log("Timer triggered - starting shuffle process");
             console.log("Using wallpaper path:", root.wallpaperPath);
