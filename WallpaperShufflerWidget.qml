@@ -410,17 +410,18 @@ PluginComponent {
         Row {
             spacing: Theme.spacingXS
 
-            DankIcon {
-                name: "wallpaper"
-                color: root.totalWallpapers > 0 ? Theme.primary : Theme.surfaceText
-                font.pixelSize: Theme.iconSize - 4
+            StyledText {
+                text: "󰸉 "
+                font.pixelSize: Theme.fontSizeMedium
+                color: Theme.surfaceText
                 anchors.verticalCenter: parent.verticalCenter
             }
 
             StyledText {
+                visible: root.showCounter
                 text: root.totalWallpapers > 0 ? `${root.currentIndex}/${root.totalWallpapers}` : "--"
-                color: root.totalWallpapers > 0 ? Theme.primary : Theme.surfaceVariantText
-                font.pixelSize: Theme.fontSizeMedium
+                font.pixelSize: Theme.fontSizeSmall
+                color: Theme.surfaceText
                 anchors.verticalCenter: parent.verticalCenter
             }
         }
@@ -430,17 +431,18 @@ PluginComponent {
         Column {
             spacing: Theme.spacingXS
 
-            DankIcon {
-                name: "wallpaper"
-                color: root.totalWallpapers > 0 ? Theme.primary : Theme.surfaceText
-                font.pixelSize: Theme.iconSize - 4
+            StyledText {
+                text: "󰸉 "
+                font.pixelSize: Theme.fontSizeMedium
+                color: Theme.surfaceText
                 anchors.horizontalCenter: parent.horizontalCenter
             }
 
             StyledText {
+                visible: root.showCounter
                 text: root.totalWallpapers > 0 ? `${root.currentIndex}/${root.totalWallpapers}` : "--"
-                color: root.totalWallpapers > 0 ? Theme.primary : Theme.surfaceVariantText
                 font.pixelSize: Theme.fontSizeSmall
+                color: Theme.surfaceText
                 anchors.horizontalCenter: parent.horizontalCenter
             }
         }
