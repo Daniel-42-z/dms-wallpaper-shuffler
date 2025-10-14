@@ -409,6 +409,7 @@ PluginComponent {
     horizontalBarPill: Component {
         Row {
             spacing: Theme.spacingXS
+            rightPadding: Theme.spacingXS
 
             StyledText {
                 text: "󰸉 "
