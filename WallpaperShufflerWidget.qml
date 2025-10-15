@@ -34,6 +34,27 @@ PluginComponent {
     popoutWidth: 420
     popoutHeight: 690
 
+    // Invisible preloader images - keep thumbnails cached for instant display
+    Item {
+        visible: false
+        Image {
+            id: currentPreloader
+            source: root.currentWallpaper ? "file://" + root.currentWallpaper : ""
+            sourceSize.width: 800
+            sourceSize.height: 450
+            asynchronous: true
+            cache: true
+        }
+        Image {
+            id: nextPreloader
+            source: root.nextWallpaper ? "file://" + root.nextWallpaper : ""
+            sourceSize.width: 800
+            sourceSize.height: 450
+            asynchronous: true
+            cache: true
+        }
+    }
+
     popoutContent: Component {
         Column {
             width: parent.width
@@ -177,6 +198,8 @@ PluginComponent {
                             id: currentImage
                             anchors.fill: parent
                             source: root.currentWallpaper ? "file://" + root.currentWallpaper : ""
+                            sourceSize.width: 800
+                            sourceSize.height: 450
                             fillMode: Image.PreserveAspectFit
                             asynchronous: true
                             cache: true
@@ -273,6 +296,8 @@ PluginComponent {
                             id: nextImage
                             anchors.fill: parent
                             source: root.nextWallpaper ? "file://" + root.nextWallpaper : ""
+                            sourceSize.width: 800
+                            sourceSize.height: 450
                             fillMode: Image.PreserveAspectFit
                             asynchronous: true
                             cache: true
