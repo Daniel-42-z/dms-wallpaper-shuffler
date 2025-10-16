@@ -354,6 +354,10 @@ PluginComponent {
         console.log("Shuffle Interval:", root.shuffleInterval, "ms");
         console.log("Shuffle Script Path:", root.scriptPath);
         console.log("Get Wallpaper Script Path:", root.getWallpaperScriptPath);
+        
+        // Immediately restore the current wallpaper from shuffle state to prevent
+        // system wallpaper daemon from taking over on boot
+        restoreCurrentWallpaperProcess.running = true;
     }
 
     // Read wallpaper info
@@ -419,6 +423,37 @@ PluginComponent {
             console.log("Using wallpaper path:", root.wallpaperPath);
             shuffleProcess.command = ["bash", root.scriptPath, root.wallpaperPath];
             shuffleProcess.running = true;
+        }
+    }
+
+    // Process to restore current wallpaper on startup (before timer fires)
+    Process {
+        id: restoreCurrentWallpaperProcess
+        command: ["bash", "-c", 
+            `WALLPAPER_DIR="${root.wallpaperPath}"
+            SHUFFLE_FILE="$WALLPAPER_DIR/.dms-wallpaper-shuffler/wallpaper_shuffle_list"
+            CURRENT_INDEX_FILE="$WALLPAPER_DIR/.dms-wallpaper-shuffler/wallpaper_current_index"
+            
+            # Check if shuffle state exists
+            if [ -f "$SHUFFLE_FILE" ] && [ -f "$CURRENT_INDEX_FILE" ]; then
+                current_index=$(cat "$CURRENT_INDEX_FILE")
+                current_wallpaper=$(sed -n "${current_index}p" "$SHUFFLE_FILE")
+                if [ -n "$current_wallpaper" ] && [ -f "$current_wallpaper" ]; then
+                    echo "Restoring wallpaper: $current_wallpaper" >&2
+                    dms ipc call wallpaper set "$current_wallpaper"
+                else
+                    echo "No valid wallpaper to restore" >&2
+                fi
+            else
+                echo "No shuffle state found, will create on first timer trigger" >&2
+            fi`
+        ]
+        running: false
+        
+        onExited: exitCode => {
+            console.log("Wallpaper restoration completed with code:", exitCode);
+            // Now update the widget info
+            wallpaperInfoProcess.running = true;
         }
     }
 
