@@ -91,7 +91,7 @@ PluginComponent {
                         anchors.centerIn: parent
                         name: "close"
                         size: Theme.iconSize - 4
-                        color: closeArea.containsMouse ? Theme.error : Theme.onSurface
+                        color: closeArea.containsMouse ? Theme.error : Theme.surfaceText
                     }
 
                     MouseArea {
