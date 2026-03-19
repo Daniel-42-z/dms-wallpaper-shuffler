@@ -31,8 +31,14 @@ PluginComponent {
     property string scriptPath: Qt.resolvedUrl("shuffle-wallpapers").toString().replace("file://", "")
     property string getWallpaperScriptPath: Qt.resolvedUrl("get-current-wallpaper").toString().replace("file://", "")
 
+    function runShuffleCommand(cmd) {
+        console.log("Running shuffle command:", cmd);
+        shuffleProcess.command = ["bash", root.scriptPath, root.wallpaperPath, cmd];
+        shuffleProcess.running = true;
+    }
+
     popoutWidth: 420
-    popoutHeight: 690
+    popoutHeight: 760
 
     // Invisible preloader images - keep thumbnails cached for instant display
     Item {
@@ -337,6 +343,62 @@ PluginComponent {
                     }
                 }
             }
+
+            // Controls section
+            Column {
+                width: parent.width
+                spacing: Theme.spacingS
+
+                Row {
+                    width: parent.width
+                    spacing: Theme.spacingS
+
+                    DankButton {
+                        width: (parent.width - Theme.spacingS) / 2
+                        text: I18n.tr("Re-shuffle")
+                        iconName: "shuffle"
+                        backgroundColor: Theme.withAlpha(Theme.surfaceContainerHigh, 0.4)
+                        textColor: Theme.surfaceText
+                        onClicked: root.runShuffleCommand("reshuffle")
+                    }
+
+                    DankButton {
+                        width: (parent.width - Theme.spacingS) / 2
+                        text: (pluginData.timerEnabled ?? true) ? I18n.tr("Disable Timer") : I18n.tr("Enable Timer")
+                        iconName: (pluginData.timerEnabled ?? true) ? "timer" : "timer_off"
+                        backgroundColor: Theme.withAlpha(Theme.surfaceContainerHigh, 0.4)
+                        textColor: (pluginData.timerEnabled ?? true) ? Theme.primary : Theme.surfaceVariantText
+                        onClicked: {
+                            if (root.pluginService) {
+                                root.pluginService.savePluginData(root.pluginId, "timerEnabled", !(pluginData.timerEnabled ?? true));
+                            }
+                        }
+                    }
+                }
+
+                Row {
+                    width: parent.width
+                    spacing: Theme.spacingS
+
+                    DankButton {
+                        width: (parent.width - Theme.spacingS) / 2
+                        text: I18n.tr("Previous")
+                        iconName: "skip_previous"
+                        backgroundColor: Theme.withAlpha(Theme.surfaceContainerHigh, 0.4)
+                        textColor: Theme.surfaceText
+                        onClicked: root.runShuffleCommand("prev")
+                    }
+
+                    DankButton {
+                        width: (parent.width - Theme.spacingS) / 2
+                        text: I18n.tr("Next")
+                        iconName: "skip_next"
+                        backgroundColor: Theme.withAlpha(Theme.surfaceContainerHigh, 0.4)
+                        textColor: Theme.surfaceText
+                        onClicked: root.runShuffleCommand("next")
+                    }
+                }
+            }
         }
     }
 
@@ -348,7 +410,7 @@ PluginComponent {
         console.log("Shuffle Interval:", root.shuffleInterval, "ms");
         console.log("Shuffle Script Path:", root.scriptPath);
         console.log("Get Wallpaper Script Path:", root.getWallpaperScriptPath);
-        
+
         // Immediately restore the current wallpaper from shuffle state to prevent
         // system wallpaper daemon from taking over on boot
         restoreCurrentWallpaperProcess.running = true;
@@ -391,43 +453,36 @@ PluginComponent {
         command: []
         running: false
 
-        onRunningChanged: {
-            console.log("Shuffle process running:", running);
-            if (!running) {
-                console.log("Wallpaper shuffled successfully");
+        onExited: (exitCode, exitStatus) => {
+            console.log("Shuffle process exited with code:", exitCode);
+            if (exitCode === 0) {
                 // Update wallpaper info after shuffling
                 wallpaperInfoProcess.running = true;
             }
-        }
-
-        onExited: (exitCode, exitStatus) => {
-            console.log("Shuffle process exited with code:", exitCode);
         }
     }
 
     // Timer to shuffle wallpapers
     Timer {
         interval: root.shuffleInterval
-        running: true
+        running: pluginData.timerEnabled ?? true
         repeat: true
-        triggeredOnStart: true
+        triggeredOnStart: pluginData.changeOnReload ?? true
 
         onTriggered: {
             console.log("Timer triggered - starting shuffle process");
-            console.log("Using wallpaper path:", root.wallpaperPath);
-            shuffleProcess.command = ["bash", root.scriptPath, root.wallpaperPath];
-            shuffleProcess.running = true;
+            root.runShuffleCommand("next");
         }
     }
 
     // Process to restore current wallpaper on startup (before timer fires)
     Process {
         id: restoreCurrentWallpaperProcess
-        command: ["bash", "-c", 
+        command: ["bash", "-c",
             `WALLPAPER_DIR="${root.wallpaperPath}"
             SHUFFLE_FILE="$WALLPAPER_DIR/.dms-wallpaper-shuffler/wallpaper_shuffle_list"
             CURRENT_INDEX_FILE="$WALLPAPER_DIR/.dms-wallpaper-shuffler/wallpaper_current_index"
-            
+
             # Check if shuffle state exists
             if [ -f "$SHUFFLE_FILE" ] && [ -f "$CURRENT_INDEX_FILE" ]; then
                 current_index=$(cat "$CURRENT_INDEX_FILE")
@@ -443,7 +498,7 @@ PluginComponent {
             fi`
         ]
         running: false
-        
+
         onExited: exitCode => {
             console.log("Wallpaper restoration completed with code:", exitCode);
             // Now update the widget info

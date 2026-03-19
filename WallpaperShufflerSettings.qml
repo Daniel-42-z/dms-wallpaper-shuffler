@@ -29,4 +29,18 @@ PluginSettings {
         description: "The time in seconds between each shuffle"
         defaultValue: "1800"
     }
+
+    ToggleSetting {
+        settingKey: "changeOnReload"
+        label: "Change on Plugin Reload"
+        description: "Whether to change the wallpaper immediately when the plugin is loaded or reloaded"
+        defaultValue: true
+    }
+
+    ToggleSetting {
+        settingKey: "timerEnabled"
+        label: "Timer Enabled"
+        description: "Whether the wallpaper should be shuffled automatically based on the interval"
+        defaultValue: true
+    }
 }
