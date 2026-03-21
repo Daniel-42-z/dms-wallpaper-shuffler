@@ -464,9 +464,9 @@ PluginComponent {
 
     // Timer to shuffle wallpapers
     Timer {
-        interval: root.shuffleInterval
-        running: pluginData.timerEnabled ?? true
-        repeat: true
+        interval: (pluginData.timerEnabled ?? true) ? root.shuffleInterval : 0
+        running: (pluginData.timerEnabled ?? true) || (pluginData.changeOnReload ?? true)
+        repeat: pluginData.timerEnabled ?? true
         triggeredOnStart: pluginData.changeOnReload ?? true
 
         onTriggered: {
